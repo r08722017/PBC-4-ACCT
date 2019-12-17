@@ -60,7 +60,7 @@ image_dict = {
     'chair': MyImage('tbun', (150, 150), 'chair.png'),
     'nplate': MyImage('tbun', (90, 90), '方形托盤.png'),
     'plate': MyImage('tbun', (150, 150), '盤子.png'),
-    'customer': MyImage('customer', (150, 150), 'man1.png'),
+    'customer': MyImage('customer', (150, 150), 'man.png'),
 }
 
 def build_customer(path):
@@ -72,13 +72,13 @@ def build_customer(path):
     speed = [1, 0]
     if 'wizard' in path:
         speed = [3, 0]
-    if 'superheroe' in path:
+    if 'superhero' in path:
         speed = [2, 0]
     return (customer, customer_rect, speed)
 
 score1 = 0
 score2 = 0
-customer_path = ['man1.png', 'superheroe.png', 'wizard.png']
+customer_path = ['man.png', 'superhero.png', 'wizard.png']
 customer_list = []
 
 customer = pygame.image.load(customer_path[0])  # 載入圖片
