@@ -3,6 +3,10 @@ import sys
 import datetime
 import random
 
+pygame.mixer.init()
+pygame.mixer.music.load('sound_background.mp3')
+pygame.mixer.music.play(1, 0)
+
 window_size = (800, 480)
 window_color = (255, 255, 255)
 
@@ -15,7 +19,7 @@ transparent = (0, 0, 0, 0)  # 為了之後讓球消失，第四個零代表完�
 
 clock = pygame.time.Clock()  # 設定時鐘
 
-counter1, text1 = 60, '60'.rjust(3)  # 時間倒數
+counter1, text1 = 200, '200'.rjust(3)  # 時間倒數
 counter2, text5 = 30, 'Cool Down' + '30'.rjust(3)
 counter3, text6 = 30, 'Cool Down' + '30'.rjust(3)
 
@@ -49,14 +53,14 @@ image_dict = {
     'beef': MyImage('tbun', (50, 50), '牛肉.png'),
     'bacon': MyImage('tbun', (90, 90), '培根.png'),
     'lettuce': MyImage('tbun', (50, 50), 'lettuce.png'),
-    'cheese': MyImage('tbun', (80, 80), 'cheese slice 1.png'),
+    'cheese': MyImage('tbun', (80, 80), 'cheese.png'),
     'ring': MyImage('tbun', (50, 59), '鈴.png'),
     'garbage': MyImage('tbun', (50, 50), '垃圾桶.png'),
     'match': MyImage('tbun', (50, 50), '火柴.png'),
     'chair': MyImage('tbun', (150, 150), 'chair.png'),
     'nplate': MyImage('tbun', (90, 90), '方形托盤.png'),
     'plate': MyImage('tbun', (150, 150), '盤子.png'),
-    'customer': MyImage('customer', (150, 150), 'man1.png'),
+    'customer': MyImage('customer', (150, 150), 'man.png'),
 }
 
 def build_customer(path):
@@ -68,13 +72,13 @@ def build_customer(path):
     speed = [1, 0]
     if 'wizard' in path:
         speed = [3, 0]
-    if 'superheroe' in path:
+    if 'superhero' in path:
         speed = [2, 0]
     return (customer, customer_rect, speed)
 
 score1 = 0
 score2 = 0
-customer_path = ['man1.png', 'superheroe.png', 'wizard.png']
+customer_path = ['man.png', 'superhero.png', 'wizard.png']
 customer_list = []
 
 customer = pygame.image.load(customer_path[0])  # 載入圖片
@@ -128,8 +132,8 @@ while True:  # 死迴圈確保視窗一直顯示
         for j in range(2):
             show_image(image_dict['nplate'], 280 + 80 * i, 250 + 60 * j)
 
-    show_image(image_dict['tbun'], 300, 285)
-    show_image(image_dict['bbun'], 380, 295)
+    show_image(image_dict['tbun'], 299, 285)
+    show_image(image_dict['bbun'], 380, 288)
     show_image(image_dict['beef'], 460, 275)
     show_image(image_dict['bacon'], 280, 315)
     show_image(image_dict['lettuce'], 380, 330)
@@ -155,6 +159,16 @@ while True:  # 死迴圈確保視窗一直顯示
     for customer, customer_rect, speed in customer_list:
         screen.blit(customer, customer_rect)  # 將圖片畫到視窗上
     
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_c] or keys[pygame.K_SLASH]:
+        s = pygame.mixer.Sound('sound_fire.wav')
+        s.play()
+    if keys[pygame.K_x] or keys[pygame.K_PERIOD]:
+        s = pygame.mixer.Sound('sound_trash.wav')
+        s.play()
+    if keys[pygame.K_z] or keys[pygame.K_COMMA]:
+        s = pygame.mixer.Sound('sound_serve.wav')
+        s.play()
 
     pygame.display.flip()  # 更新全部顯示
 
