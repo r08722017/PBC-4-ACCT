@@ -53,7 +53,7 @@ image_dict = {
     'beef': MyImage('tbun', (50, 50), '牛肉.png'),
     'bacon': MyImage('tbun', (90, 90), '培根.png'),
     'lettuce': MyImage('tbun', (50, 50), 'lettuce.png'),
-    'cheese': MyImage('tbun', (80, 80), 'cheese slice 1.png'),
+    'cheese': MyImage('tbun', (80, 80), 'cheese.png'),
     'ring': MyImage('tbun', (50, 59), '鈴.png'),
     'garbage': MyImage('tbun', (50, 50), '垃圾桶.png'),
     'match': MyImage('tbun', (50, 50), '火柴.png'),
