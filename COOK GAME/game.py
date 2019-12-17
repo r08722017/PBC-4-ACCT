@@ -3,6 +3,10 @@ import sys
 import datetime
 import random
 
+pygame.mixer.init()
+pygame.mixer.music.load('sound_background.mp3')
+pygame.mixer.music.play(1, 0)
+
 window_size = (800, 480)
 window_color = (255, 255, 255)
 
@@ -15,7 +19,7 @@ transparent = (0, 0, 0, 0)  # 為了之後讓球消失，第四個零代表完�
 
 clock = pygame.time.Clock()  # 設定時鐘
 
-counter1, text1 = 60, '60'.rjust(3)  # 時間倒數
+counter1, text1 = 200, '200'.rjust(3)  # 時間倒數
 counter2, text5 = 30, 'Cool Down' + '30'.rjust(3)
 counter3, text6 = 30, 'Cool Down' + '30'.rjust(3)
 
@@ -128,8 +132,8 @@ while True:  # 死迴圈確保視窗一直顯示
         for j in range(2):
             show_image(image_dict['nplate'], 280 + 80 * i, 250 + 60 * j)
 
-    show_image(image_dict['tbun'], 300, 285)
-    show_image(image_dict['bbun'], 380, 295)
+    show_image(image_dict['tbun'], 299, 285)
+    show_image(image_dict['bbun'], 380, 288)
     show_image(image_dict['beef'], 460, 275)
     show_image(image_dict['bacon'], 280, 315)
     show_image(image_dict['lettuce'], 380, 330)
@@ -155,6 +159,16 @@ while True:  # 死迴圈確保視窗一直顯示
     for customer, customer_rect, speed in customer_list:
         screen.blit(customer, customer_rect)  # 將圖片畫到視窗上
     
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_c] or keys[pygame.K_SLASH]:
+        s = pygame.mixer.Sound('sound_fire.wav')
+        s.play()
+    if keys[pygame.K_x] or keys[pygame.K_PERIOD]:
+        s = pygame.mixer.Sound('sound_trash.wav')
+        s.play()
+    if keys[pygame.K_z] or keys[pygame.K_COMMA]:
+        s = pygame.mixer.Sound('sound_serve.wav')
+        s.play()
 
     pygame.display.flip()  # 更新全部顯示
 
