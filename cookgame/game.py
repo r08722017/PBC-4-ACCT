@@ -1,13 +1,25 @@
 import pygame
+import random
 import sys
 import time
-import random
 
 image_cache = {}
 
+setting = {
+    'tick': 60,
+    'duration': 120,
+    'cooldown': 30,
+    'customer': [
+        ('man', (1, 0), 3),
+        ('superheroe', (2, 0), 4),
+        ('wizard', (3, 0), 5)
+    ]
+}
+
 
 class Image(pygame.sprite.Sprite):
-    def __init__(self, name, size=None):
+    
+    def __init__(self, name, size=None, pos=None, alpha_delta=None):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
         if name not in image_cache:
@@ -16,6 +28,12 @@ class Image(pygame.sprite.Sprite):
         if size:
             self.image = pygame.transform.scale(self.image, size)
         self.rect = self.image.get_rect()
+        if pos:
+            self.rect.center = (pos[0], pos[1])
+        self.alpha = 255
+        self.alpha_delta = 1
+        if alpha_delta is not None:
+            self.alpha_delta = alpha_delta
 
     def show_position(self, screen, pos=None, size=None):
         if size is not None:
@@ -23,6 +41,16 @@ class Image(pygame.sprite.Sprite):
         if pos is None:
             pos = self.rect
         screen.blit(self.image, pos)
+
+    def fade_out(self, screen):
+        if self.alpha > 0:
+            self.alpha -= self.alpha_delta
+        surf = pygame.surface.Surface((self.rect.width, self.rect.height))
+        surf.set_colorkey((0, 0, 0))
+        surf.set_alpha(self.alpha)
+        surf.blit(self.image, (0, 0))
+        screen.blit(surf, self.rect)
+        return self.alpha <= 0
 
 
 class Burger:
@@ -70,18 +98,13 @@ class Burger:
 
 
 class Customer:
-    cust_choice = [
-        ('man', (1, 0), 3),
-        ('superheroe', (2, 0), 4),
-        ('wizard', (3, 0), 5)
-    ]
 
     def __init__(self, custype=None):
         if custype is None:
             custype, self.speed, self.count = random.choice(
-                Customer.cust_choice)
+                setting.get('customer'))
         else:
-            custype, self.speed, self.count = Customer.cust_choice[custype]
+            custype, self.speed, self.count = setting.get('customer')[custype]
 
         self.show = True
         self.image = Image(custype, (110, 110))
@@ -102,7 +125,9 @@ class Customer:
 
 
 class Player:
-    def __init__(self, name, pos_x, cooldown):
+    
+    def __init__(self, game, name, pos_x, cooldown):
+        self.game = game
         self.name = name
         self.score = 0
         self.max_cooldown = cooldown
@@ -110,25 +135,35 @@ class Player:
         self.pos_x = pos_x
         self.burger = Burger(3, pos_x, 370, [])
 
-    def show(self, game):
+    def show(self):
         Image('plate', (150, 150)).show_position(
-            game.screen, (self.pos_x - 75, 275))
-        game.display_text(self.name + ': ' + str(self.score), (self.pos_x, 20))
+            self.game.screen, (self.pos_x - 75, 275))
+        self.game.display_text(
+            self.name + ': ' + str(self.score), (self.pos_x, 20))
         if self.cooldown:
-            game.display_text(
+            self.game.display_text(
                 'Cool Down: ' + str(self.cooldown), (self.pos_x, 460))
         else:
-            game.display_text('Attack!', (self.pos_x, 460))
+            self.game.display_text('Attack!', (self.pos_x, 460))
 
-        self.burger.update_burger(game.screen)
+        self.burger.update_burger(self.game.screen)
 
-    def do_serve(self, customer_list):
+    def fire_plate(self):
+        fire = Image('fire', (150, 200), (self.pos_x, 300), 3)
+        self.game.fadeout_list.append(fire)
+
+    def do_serve(self):
+        customer_list = self.game.customer_list
         pygame.mixer.Sound('sound_serve.wav').play()
         is_served = False
         for cust_id in range(len(customer_list)):
             if customer_list[cust_id].burger.equal(self.burger):
                 is_served = True
                 self.score += customer_list[cust_id].count * 10
+                dollar_pos = list(customer_list[cust_id].image.rect.center)
+                dollar_pos[1] -= 50
+                dollar = Image('dollar', (100, 100), dollar_pos, 3)
+                self.game.fadeout_list.append(dollar)
                 del customer_list[cust_id]
                 break
         if not is_served:
@@ -143,20 +178,22 @@ class Player:
         if not self.cooldown:
             pygame.mixer.Sound('sound_fire.wav').play()
             enemy.burger.clear()
+            enemy.fire_plate()
             self.cooldown = self.max_cooldown
 
 
 class Game:
+    
     def __init__(self):
         pygame.init()
         pygame.display.set_caption('我是廚神')
         pygame.time.set_timer(pygame.USEREVENT, 1000)
-        pygame.time.Clock().tick(60)
+        pygame.time.Clock().tick(setting.get('tick'))
         self.prev_customer_tick = -1000
         self.now_tick = 0
-        self.game_time = 100
-        self.player1 = Player('Player1', 140, 30)
-        self.player2 = Player('Player2', 660, 30)
+        self.game_time = setting.get('duration')
+        self.player1 = Player(self, 'Player1', 140, setting.get('cooldown'))
+        self.player2 = Player(self, 'Player2', 660, setting.get('cooldown'))
 
         pygame.mixer.init()
         pygame.mixer.music.load('sound_background.mp3')
@@ -164,6 +201,7 @@ class Game:
         self.font = pygame.font.SysFont('Consolas', 30)
         self.screen = pygame.display.set_mode((800, 480))
         self.customer_list = []
+        self.fadeout_list = []
 
     def display_background(self):
         Image('background').show_position(self.screen, (-300, -600))
@@ -197,6 +235,11 @@ class Game:
         text_rect = text.get_rect(center=pos)
         self.screen.blit(text, text_rect)
 
+    def display_fadeout(self):
+        for image_id in range(len(self.fadeout_list))[::-1]:
+            if self.fadeout_list[image_id].fade_out(self.screen):
+                del self.fadeout_list[image_id]
+
     def update_customer(self):
         if random.random() < 1.0 / 40 and self.now_tick - self.prev_customer_tick > 120:
             self.prev_customer_tick = self.now_tick
@@ -217,7 +260,7 @@ class Game:
             pygame.K_a: lambda: self.player1.burger.add_ingredient('bacon_side'),
             pygame.K_s: lambda: self.player1.burger.add_ingredient('lettuce_side'),
             pygame.K_d: lambda: self.player1.burger.add_ingredient('cheese_side'),
-            pygame.K_z: lambda: self.player1.do_serve(self.customer_list),
+            pygame.K_z: lambda: self.player1.do_serve(),
             pygame.K_x: lambda: self.player1.do_trash(),
             pygame.K_c: lambda: self.player1.do_fire(self.player2),
 
@@ -228,7 +271,7 @@ class Game:
             pygame.K_k: lambda: self.player2.burger.add_ingredient('bacon_side'),
             pygame.K_l: lambda: self.player2.burger.add_ingredient('lettuce_side'),
             pygame.K_SEMICOLON: lambda: self.player2.burger.add_ingredient('cheese_side'),
-            pygame.K_COMMA: lambda: self.player2.do_serve(self.customer_list),
+            pygame.K_COMMA: lambda: self.player2.do_serve(),
             pygame.K_PERIOD: lambda: self.player2.do_trash(),
             pygame.K_SLASH: lambda: self.player2.do_fire(self.player1),
         }
@@ -256,8 +299,9 @@ class Game:
             self.now_tick += 1
             self.display_background()
             self.update_customer()
-            self.player1.show(self)
-            self.player2.show(self)
+            self.player1.show()
+            self.player2.show()
+            self.display_fadeout()
             pygame.display.flip()
         pygame.quit()
 
