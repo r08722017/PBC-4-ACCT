@@ -110,8 +110,8 @@ class Customer:
         self.image = Image(custype, (110, 110))
         self.image.rect.center = (50, 205)
         self.cloud = Image('cloud', (150, 150))
-        self.cloud.rect.center = (100, 120)
-        self.burger = Burger(self.count, 100, 120)
+        self.cloud.rect.center = (50, 120)
+        self.burger = Burger(self.count, 50, 120)
 
     def move(self, screen):
         self.image.rect = self.image.rect.move(self.speed)
