@@ -86,7 +86,7 @@ class Burger:
             image.show_position(screen)
 
     def add_ingredient(self, ingredient):
-        if len(self.ingredient) < 10:
+        if len(self.ingredient) < 6:
             self.ingredient.append(ingredient)
         self.burger = []
         self.build_burger()
@@ -159,6 +159,7 @@ class Player:
         for cust_id in range(len(customer_list)):
             if customer_list[cust_id].burger.equal(self.burger):
                 is_served = True
+                pygame.mixer.Sound('sound_coin.wav').play()  # 錢幣音效，但未調整到送餐音效後
                 self.score += customer_list[cust_id].count * 10
                 dollar_pos = list(customer_list[cust_id].image.rect.center)
                 dollar_pos[1] -= 50
@@ -226,7 +227,7 @@ class Game:
         Image('cheese', (80, 80)).show_position(self.screen, (445, 320))
 
         if self.game_time:
-            self.display_text(str(self.game_time), (400, 20))
+            self.display_text(str(self.game_time // 60)+ ":" + ("%02d" % (self.game_time % 60)), (400, 20))
         else:
             self.display_text('Time\'s up!', (400, 20))
 
