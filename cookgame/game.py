@@ -11,7 +11,7 @@ setting = {
     'cooldown': 30,
     'customer': [
         ('man', (1, 0), 3),
-        ('superheroe', (2, 0), 4),
+        ('superhero', (2, 0), 4),
         ('wizard', (3, 0), 5)
     ]
 }
