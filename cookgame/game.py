@@ -251,7 +251,7 @@ class Game:
             if not self.customer_list[cust_id].show:
                 del self.customer_list[cust_id]
 
-    def catch_keyboard(self):
+    def catch_keyboard(self, game_event):
         keys = pygame.key.get_pressed()
         action = {
             pygame.K_q: lambda: self.player1.burger.add_ingredient('topbun_side'),
@@ -277,7 +277,7 @@ class Game:
         }
 
         for key, event in action.items():
-            if keys[key]:
+            if game_event.key == key:
                 event()
 
     def start_game(self):
@@ -294,7 +294,7 @@ class Game:
                     if self.player2.cooldown:
                         self.player2.cooldown -= 1
                 if event.type == pygame.KEYDOWN:
-                    self.catch_keyboard()
+                    self.catch_keyboard(event)
 
             self.now_tick += 1
             self.display_background()
