@@ -7,7 +7,7 @@ image_cache = {}
 
 setting = {
     'tick': 60,
-    'duration': 20,
+    'duration': 120,
     'cooldown': 30,
     'customer': [
         ('man', (1, 0), 3),
