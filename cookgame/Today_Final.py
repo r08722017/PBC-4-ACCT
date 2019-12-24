@@ -154,7 +154,7 @@ class Player:
         self.burger.update_burger(self.game.screen)
 
     def fire_plate(self):
-        fire = Image('fire', (150, 200), (self.pos_x, 300), 3)
+        fire = Image('fire', (150, 200), (self.pos_x, 300), 1.2)
         self.game.fadeout_list.append(fire)
 
     def do_serve(self):
