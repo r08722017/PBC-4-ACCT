@@ -158,7 +158,7 @@ class Player:
         self.game.fadeout_list.append(fire)
 
     def do_serve(self):
-        if self.now_tick - self.firetick <= 140:
+        if self.now_tick - self.firetick <= 180:
             return
         else:
             customer_list = self.game.customer_list
@@ -180,14 +180,14 @@ class Player:
             self.burger.clear()
 
     def do_trash(self):
-        if self.now_tick - self.firetick <= 140:
+        if self.now_tick - self.firetick <= 180:
             return
         else:
             pygame.mixer.Sound('sound_trash.wav').play()
             self.burger.clear()
 
     def do_fire(self, enemy):
-        if self.now_tick - self.firetick <= 140:
+        if self.now_tick - self.firetick <= 180:
             return
         elif not self.cooldown:
             pygame.mixer.Sound('sound_fire.wav').play()
@@ -197,7 +197,7 @@ class Player:
             self.cooldown = self.max_cooldown
 
     def add_ingredient(self, ingredient):
-        if self.now_tick - self.firetick <= 140:
+        if self.now_tick - self.firetick <= 180:
             return
         else:
             self.burger.add_ingredient(ingredient)
