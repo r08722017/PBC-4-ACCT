@@ -7,7 +7,7 @@ image_cache = {}
 
 setting = {
     'tick': 60,
-    'duration': 3,
+    'duration': 20,
     'cooldown': 30,
     'customer': [
         ('man', (1, 0), 3),
@@ -176,7 +176,7 @@ class Player:
                     del customer_list[cust_id]
                     break
             if not is_served:
-                self.score -= 50
+                self.score -= 20
             self.burger.clear()
 
     def do_trash(self):
@@ -224,6 +224,8 @@ class Game:
         self.screen = pygame.display.set_mode((800, 480))
         self.customer_list = []
         self.fadeout_list = []
+        
+        self.countdown = False
 
     def display_background(self):
         Image('background').show_position(self.screen, (-300, -600))
@@ -336,9 +338,14 @@ class Game:
             self.display_fadeout()
             pygame.display.flip()
             if not self.game_time:
-                End_Game(self.game_result()).who_win()
-            if self.game_time == 1:
                 pygame.mixer.music.pause()
+                pygame.mixer.music.load('WIN .wav')
+                pygame.mixer.music.play(1, 0)
+                End_Game(self.game_result()).who_win()
+            if self.game_time == 11 and not self.countdown:
+                self.countdown = True
+                pygame.mixer.music.load('countdown 10s.wav')
+                pygame.mixer.music.play(1, 0)
         pygame.quit()
     
 
