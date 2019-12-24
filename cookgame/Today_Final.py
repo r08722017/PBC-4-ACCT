@@ -339,7 +339,7 @@ class Game:
             pygame.display.flip()
             if not self.game_time:
                 pygame.mixer.music.pause()
-                pygame.mixer.music.load('WIN .wav')
+                pygame.mixer.music.load('win.wav')
                 pygame.mixer.music.play(1, 0)
                 End_Game(self.game_result()).who_win()
             if self.game_time == 11 and not self.countdown:
